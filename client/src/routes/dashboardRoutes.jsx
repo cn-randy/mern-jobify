@@ -6,7 +6,7 @@ import {
   EditJob,
   Profile,
   Stats,
-} from "../pages/Index.jsx";
+} from "../pages/index.jsx";
 
 import { action as addJobAction } from "../pages/AddJob.jsx";
 import { action as deleteJobAction } from "../pages/DeleteJob.jsx";
