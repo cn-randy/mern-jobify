@@ -10,3 +10,4 @@ export { default as StatItem } from "./StatItem.jsx";
 export { default as SubmitButton } from "./SubmitButton.jsx";
 export { default as StatsContainer } from "./StatsContainer.jsx";
 export { default as ChartContainer } from "./ChartContainer.jsx";
+export { default as Loading } from "./Loading.jsx";

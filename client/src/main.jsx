@@ -9,8 +9,8 @@ fetch("/api/v1/test")
   .then((response) => response.json())
   .then((data) => {});
 ReactDOM.createRoot(document.getElementById("root")).render(
-  <React.StrictMode>
+  <>
     <App />
     <ToastContainer position="top-center" />
-  </React.StrictMode>,
+  </>,
 );

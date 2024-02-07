@@ -6,35 +6,52 @@ import { FormRow, FormRowSelect } from "../components";
 import { JOB_STATUS, JOB_TYPE } from "../../../utils/constants";
 import { toast } from "react-toastify";
 import { SubmitButton } from "../components/index.js";
+import { queryClient } from "../utils/queryClient.js";
+import { useQuery } from "@tanstack/react-query";
 
-export const loader = async function ({ params }) {
-  try {
-    const { data } = await http.get(`/jobs/${params.id}`);
-    return data;
-  } catch (err) {
-    toast.error(err?.response?.data?.message);
-    return redirect("/dashboard/all-jobs");
-  }
+const singleJobQuery = (id) => {
+  return {
+    querykey: ["job", id],
+    queryFn: async () => {
+      const { data } = await http.get(`/jobs/${id}`);
+      return data;
+    },
+  };
 };
+export const loader = (queryClient) =>
+  async function ({ params }) {
+    try {
+      await queryClient.ensureQueryData(singleJobQuery(params.id));
+      return params.id;
+    } catch (err) {
+      toast.error(err?.response?.data?.message);
+      return redirect("/dashboard/all-jobs");
+    }
+  };
 
-export const action = async function ({ request, params }) {
-  const formData = await request.formData();
-  const data = Object.fromEntries(formData);
+export const action =
+  (queryCkient) =>
+  async ({ request, params }) => {
+    const formData = await request.formData();
+    const data = Object.fromEntries(formData);
 
-  try {
-    await http.patch(`/jobs/${params.id}`, data);
-    toast.success("Job successfully changed");
-    return redirect("/dashboard/all-jobs");
-  } catch (err) {
-    toast.error(err?.response?.data?.message);
-    return err;
-  }
+    try {
+      await http.patch(`/jobs/${params.id}`, data);
+      queryClient.invalidateQueries(["jobs"]);
+      toast.success("Job successfully changed");
+      return redirect("/dashboard/all-jobs");
+    } catch (err) {
+      toast.error(err?.response?.data?.message);
+      return err;
+    }
 
-  return null;
-};
+    return null;
+  };
 
 function EditJob() {
-  const { job } = useLoaderData();
+  const id = useLoaderData();
+
+  const { data: job } = useQuery(singleJobQuery(id));
 
   return (
     <Wrapper>

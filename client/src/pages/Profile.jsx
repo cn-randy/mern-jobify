@@ -1,29 +1,33 @@
-import { Form, useOutletContext } from "react-router-dom";
+import { Form, redirect, useOutletContext } from "react-router-dom";
 import { toast } from "react-toastify";
 
 import Wrapper from "../assets/wrappers/DashboardFormPage";
 import http from "../utils/axios";
 import { FormRow } from "../components";
 import { SubmitButton } from "../components/index.js";
+import { queryClient } from "../utils/queryClient.js";
 
-export const action = async function ({ request }) {
-  const formData = await request.formData();
+export const action =
+  (queryClient) =>
+  async ({ request }) => {
+    const formData = await request.formData();
 
-  const file = formData.get("avatar");
-  if (file && file.size > 500000 * 1024) {
-    toast.error("Image size too large.");
-    return null;
-  }
+    const file = formData.get("avatar");
+    if (file && file.size > 500000 * 1024) {
+      toast.error("Image size too large.");
+      return null;
+    }
 
-  try {
-    await http.patch("/users/update-user", formData);
-    toast.success("Profile has been updated.");
-  } catch (err) {
-    toast.error(err?.response?.data?.message);
-  }
-
-  return null;
-};
+    try {
+      await http.patch("/users/update-user", formData);
+      queryClient.invalidateQueries(["user"]);
+      toast.success("Profile has been updated.");
+      return redirect("/dashboard");
+    } catch (err) {
+      toast.error(err?.response?.data?.message);
+      return null;
+    }
+  };
 
 function Profile() {
   const { user } = useOutletContext();

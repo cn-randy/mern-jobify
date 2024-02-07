@@ -8,6 +8,7 @@ import {
 } from "../pages/index.jsx";
 import { action as registerAction } from "../pages/Register.jsx";
 import { action as loginAction } from "../pages/Login.jsx";
+import { queryClient } from "../utils/queryClient.js";
 
 export const topLevelRoutes = [
   {
@@ -24,7 +25,7 @@ export const topLevelRoutes = [
       {
         path: "login",
         element: <Login />,
-        action: loginAction,
+        action: loginAction(queryClient),
       },
     ],
   },

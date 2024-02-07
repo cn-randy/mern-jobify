@@ -13,26 +13,29 @@ import http from "../utils/axios.js";
 import { MINIMUM_PASSWORD_LENGTH } from "../utils/constants.js";
 import { parseErrors } from "../utils/helpers.js";
 import { isEmpty } from "lodash";
+import { queryClient } from "../utils/queryClient.js";
 
-export const action = async function ({ request }) {
-  const formData = await request.formData();
-  const data = Object.fromEntries(formData);
-  //* validate form data
-  if (data.password.length < MINIMUM_PASSWORD_LENGTH) {
-    const errors = `password::Password must be at least ${MINIMUM_PASSWORD_LENGTH} characters long\n`;
-    return errors;
-  }
-  try {
-    await http.post("auth/login", data);
-
-    toast.success("Login successful");
-    return redirect("/dashboard");
-  } catch (err) {
-    const errors = "err?.response?.data?.message";
-    toast.error(err?.response?.data?.message);
-    return err;
-  }
-};
+export const action =
+  (queryClient) =>
+  async ({ request }) => {
+    const formData = await request.formData();
+    const data = Object.fromEntries(formData);
+    //* validate form data
+    if (data.password.length < MINIMUM_PASSWORD_LENGTH) {
+      const errors = `password::Password must be at least ${MINIMUM_PASSWORD_LENGTH} characters long\n`;
+      return errors;
+    }
+    try {
+      await http.post("auth/login", data);
+      queryClient.invalidateQueries();
+      toast.success("Login successful");
+      return redirect("/dashboard");
+    } catch (err) {
+      const errors = "err?.response?.data?.message";
+      toast.error(err?.response?.data?.message);
+      return err;
+    }
+  };
 
 function Login() {
   const navigate = useNavigate();

@@ -25,3 +25,9 @@ export const TIME = {
   ONE_DAY_MS: 1000 * 60 * 60 * 24,
   TOKEN_EXPIRY: 90,
 };
+
+export const RATE_LIMITER = {
+  TIMEOUT: 1000 * 60 * 15, //* 15 minutes
+  MAX_REQUESTS: 15,
+  MESSAGE: `IP rate limit exceeded. Try again in ${1000 * 60 * 15} minutes.`
+};

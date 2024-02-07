@@ -7,18 +7,21 @@ import { FormRow, FormRowSelect } from "../components";
 import { JOB_STATUS, JOB_TYPE } from "../../../utils/constants";
 import { SubmitButton } from "../components/index.js";
 
-export const action = async function ({ request }) {
-  const formData = await request.formData();
-  const data = Object.fromEntries(formData);
+export const action =
+  (queryClient) =>
+  async ({ request }) => {
+    const formData = await request.formData();
+    const data = Object.fromEntries(formData);
 
-  try {
-    await http.post("/jobs", data);
-    toast.success("Job successfully created.");
-    return redirect("all-jobs");
-  } catch (err) {
-    return toast.error(err?.response?.data?.message);
-  }
-};
+    try {
+      await http.post("/jobs", data);
+      queryClient.invalidateQueries(["jobs"]);
+      toast.success("Job successfully created.");
+      return redirect("all-jobs");
+    } catch (err) {
+      return toast.error(err?.response?.data?.message);
+    }
+  };
 
 function AddJob() {
   const { user } = useOutletContext();

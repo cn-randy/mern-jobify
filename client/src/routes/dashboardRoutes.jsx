@@ -17,24 +17,42 @@ import { loader as allJobsLoader } from "../pages/AllJobs.jsx";
 import { loader as dashboardLoader } from "../pages/DashboardLayout.jsx";
 import { loader as editJobLoader } from "../pages/EditJob.jsx";
 import { loader as statsLoader } from "../pages/Stats.jsx";
+import Error from "../pages/Error.jsx";
+import ErrorElement from "../components/ErrorElement.jsx";
+import { queryClient } from "../utils/queryClient.js";
 
 export const dashboardRoutes = [
   {
     path: "dashboard",
-    element: <DashboardLayout />,
-    loader: dashboardLoader,
+    element: <DashboardLayout queryClient={queryClient} />,
+    errorElement: <Error />,
+    loader: dashboardLoader(queryClient),
     children: [
-      { index: true, element: <AddJob />, action: addJobAction },
+      { index: true, element: <AddJob />, action: addJobAction(queryClient) },
       {
         path: "edit-job/:id",
         element: <EditJob />,
-        action: editJobAction,
-        loader: editJobLoader,
+        action: editJobAction(queryClient),
+        loader: editJobLoader(queryClient),
       },
-      { path: "delete-job/:id", action: deleteJobAction },
-      { path: "stats", element: <Stats />, loader: statsLoader },
-      { path: "all-jobs", element: <AllJobs />, loader: allJobsLoader },
-      { path: "profile", element: <Profile />, action: profileAction },
+      { path: "delete-job/:id", action: deleteJobAction(queryClient) },
+      {
+        path: "stats",
+        element: <Stats />,
+        errorElement: <ErrorElement />,
+        loader: statsLoader(queryClient),
+      },
+      {
+        path: "all-jobs",
+        element: <AllJobs />,
+        loader: allJobsLoader(queryClient),
+        errorElement: <ErrorElement />,
+      },
+      {
+        path: "profile",
+        element: <Profile />,
+        action: profileAction(queryClient),
+      },
       { path: "admin", element: <Admin />, loader: adminLoader },
     ],
   },
